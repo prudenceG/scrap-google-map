@@ -13,12 +13,22 @@ getResultsFromGoogleMaps = (job, place) => {
   .click('#searchbox-searchbutton')
   .wait('div.section-result')
   .evaluate(() => {
-    return Array.from(document
-      .querySelectorAll('h3.section-result-title, span.section-result-location'))
-      .map(element => element.innerText);
+    const results = []
+
+    Array.from(document
+      .querySelectorAll('h3.section-result-title span.section-result-location'))
+      .map(result => {
+        const resultText = result.innerText
+        results.push({resultText})
+        // return result.innerText
+      });
+      return results
+      
+    })
+    .end()
+  .then((data) => {
+    console.dir(data, {depth:null})
   })
-  .end()
-  .then(console.log)
   .catch(error => {
     console.error('Search failed:', error)
   })
