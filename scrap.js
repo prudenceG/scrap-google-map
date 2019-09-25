@@ -1,84 +1,58 @@
 const Nightmare = require('nightmare')
-const nightmare = Nightmare({ show: true })
+const nightmare = Nightmare({ show: false })
 
 const args = process.argv.slice(2)
 const job = args[0];
 const place = args[1];
 
 
-getResultsFromGoogleMaps = (job, place) => {
-  const selector = 'div.section-result-text-content'
-  nightmare
+getDetailsUrl = (job, place, index) => {
+  return nightmare
   .goto('https://www.google.fr/maps')
   .type('#searchboxinput', `${job} ${place}`)
   .click('#searchbox-searchbutton')
+  .wait('div.section-result')      
+  .then(() => {
+    return nightmare
+    .click(`div[data-result-index="${index}"]`)
+    .wait('.section-hero-header-title-description')
+    .url()
+  })
+  .catch((error) =>{ 
+    console.error('an error has occurred: ' + error);
+  });
+}
+
+getListLenghtForOnePage = (job, place) => {
+  return nightmare
+  .goto(`https://www.google.fr/maps/search/${job}+${place}`)
   .wait('div.section-result')
-  .evaluate((selector) => {
-    const results = []
-    let resultsHTML = document.querySelectorAll('div.section-result-text-content')
-    Array.from(resultsHTML)
-      .map(result => {
-
-        // let event = document.createEvent('MouseEvent');
-        // event.initEvent('click', true, true);
-        // result.dispatchEvent(event);
-
-        // click on each result
-        // result.click('div.section-result')
-        // .wait('div.section-layout')
-        // .evaluate(() => {
-          //   const name = document.querySelector('div.section-hero-header-title div div h1').innerText;
-          //   return name;
-          
-          // })
-          // .end()
-          // .then((data) => {
-            //   console.dir(data, {depth:null})
-            // })
-            // .catch(err => {
-              //   console.error('Second Search failed:', err)
-              // })
-              
-              const name = result.querySelector('div.section-result-title-container h3').innerText;
-              const address = result.querySelector('div.section-result-details-container span.section-result-location').innerText;
-              results.push({name, address})
-      });
-      return results
-      
-  }, 'selector')
-  .then((results) => {
-    console.log('results', results)
-    return nightmare.url()
-  })
-  .then((url) => {
-    const selector2 = 'div.section-layout h1'
-    console.log('url', url)
-    return nightmare
-      .click('div.section-result')
-      .wait(5000)
-      // .evaluate((selector2) => {
-      //   const name = document.querySelector('div.section-layout h1').innerHTML;
-      //   return name;
-      // }, 'selector2')
-  })
-  .then((name) => {
-    const selector3 = 'div.section-layout h1'
-    console.log('name', name)
-    return nightmare
-      .evaluate((selector3) => {
-        const name = document.querySelector('div.section-layout h1').innerHTML;
-        return name;
-      }, 'selector3')
-  })
-  .then((name) => {
-    // console.log(url);
-    console.log('name2', name)
-  })
-  .catch(error => {
-    console.error('First Search failed:', error)
+  .evaluate(() => {
+    const resultsHTML = document.querySelectorAll('div.section-result-text-content')
+    return Array.from(resultsHTML).length
   })
 }
 
 
+getResultsFromGoogleMaps = async (job, place) => {
+
+  const detailsLinks = [];
+  const listLength = await getListLenghtForOnePage(job, place);
+  console.log('get list length', listLength);
+
+  for (let i = 0 ; i < listLength ; i++) {
+    const url = await getDetailsUrl(job, place, i)
+    detailsLinks.push(url);
+  }
+  console.log('get url', detailsLinks) 
+  console.log('get url', detailsLinks.length) 
+
+
+
+
+
+
+
+}
 
 getResultsFromGoogleMaps(job, place);
