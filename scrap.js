@@ -10,7 +10,8 @@ getListLenghtForOnePage = () => {
     const resultsHTML = document.querySelectorAll('div.section-result-text-content');
 
     return resultsHTML && Array.from(resultsHTML).length;
-  })
+    })
+  ;
 }
 
 getListLengthAdsForOnePage = () => {
@@ -20,6 +21,7 @@ getListLengthAdsForOnePage = () => {
 
       return adsHTML && Array.from(adsHTML).length;
     })
+  ;
 }
 
 clickItemAndGetDetails = (index) => {
@@ -27,7 +29,7 @@ clickItemAndGetDetails = (index) => {
     .click(`div[data-result-index="${index}"]`)
     .wait('h1.section-hero-header-title-title')
     .evaluate(() => {
-      const regex = /\n/g
+      const regex = /\n/gm
       const websiteSelector = document.querySelector('div[data-tooltip="Open website"]');
       const nameSelector = document.querySelector('h1.section-hero-header-title-title');
       const addressSelector = document.querySelector('div[data-tooltip="Copy address"]');
@@ -36,8 +38,12 @@ clickItemAndGetDetails = (index) => {
       const address = addressSelector && addressSelector.innerText;
       const website = websiteSelector && websiteSelector.innerText;
       const phone = phoneSelector && phoneSelector.innerText;
+      const cleanName = name && name.replace(regex, '');
+      const cleanAddress = address && address.replace(regex, '');
+      const cleanWebsite = website && website.replace(regex, '');
+      const cleanPhone = phone && phone.replace(regex, '');
           
-      return {name, address, website, phone};
+      return {name: cleanName, address: cleanAddress, website: cleanWebsite, phone: cleanPhone};
     })
   ;
 }
@@ -80,9 +86,7 @@ nextPage = () => {
 }
 
 checkClassDisabled = () => {
-  return nightmare
-    .exists('button[aria-label=" Next page "].n7lv7yjyC35__button-disabled')
-  ;
+  return nightmare.exists('button[aria-label=" Next page "].n7lv7yjyC35__button-disabled');
 }
 
 
@@ -98,10 +102,6 @@ browseAllPages = async (isDisabled, results, listLength2) => {
   }
 
   return results;
-}
-
-closeNightmare = () => {
-  return nightmare.end();
 }
 
 getResultsFromGoogleMaps = async (job, place) => {
@@ -122,7 +122,7 @@ getResultsFromGoogleMaps = async (job, place) => {
       const results = await browseAllPages(isButtonDisabled, infosPage, listLength);
       console.log('RESULTS', results);
       console.log('RESULTS LENGTH', results.length);
-      connection.then(() => nightmare.end())
+      connection.then(() => nightmare.end());
       return results;
     }
   }
