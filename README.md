@@ -6,5 +6,8 @@
   - the second one is a place
   - run this command in your terminal from the project folder: `node scrap [job] [place]`
 
+#### Response returned
+An array of all results of your research wich contains the name, the phone, the address and the website
+
 ### TEST the program
 Work in progress
