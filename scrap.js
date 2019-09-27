@@ -89,7 +89,6 @@ checkClassDisabled = () => {
   return nightmare.exists('button[aria-label=" Next page "].n7lv7yjyC35__button-disabled');
 }
 
-
 browseAllPages = async (isDisabled, results, listLength2) => {
   if(!isDisabled && listLength2 > 0) {
     await nextPage();
@@ -123,6 +122,7 @@ getResultsFromGoogleMaps = async (job, place) => {
       console.log('RESULTS', results);
       console.log('RESULTS LENGTH', results.length);
       connection.then(() => nightmare.end());
+      
       return results;
     }
   }
