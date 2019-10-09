@@ -79,6 +79,7 @@ getResultsForOnePage = async (listLength) => {
 }
 
 nextPage = () => {
+  console.log('next page')
   return nightmare
     .click('button[aria-label=" Next page "]')
     .wait(5000)
@@ -103,14 +104,29 @@ browseAllPages = async (isDisabled, results, listLength2) => {
   return results;
 }
 
+goToWebsite = async (job, place) => {
+  try {
+    const connection = await nightmare
+      .goto(`https://www.google.fr/maps/search/${job}+${place}`)
+      .wait('div.section-result')
+    ;
+
+    return await connection
+  }
+  catch(e) {
+    console.log('error try connection', e)
+    // Error: .wait() for div.section-result timed out after 30000msec
+    return nightmare.end()
+  }
+}
+
 getResultsFromGoogleMaps = async (job, place) => {
   try {
     console.log('Veuillez patientez...')
     if (job && place) {
-      const connection = nightmare
-        .goto(`https://www.google.fr/maps/search/${job}+${place}`)
-        .wait('div.section-result')
-      ;
+
+      await goToWebsite(job, place);
+
       // goto search first page and return length of results
       const listLength = await getListLenghtForOnePage(job, place);
       // get page results
@@ -121,13 +137,13 @@ getResultsFromGoogleMaps = async (job, place) => {
       const results = await browseAllPages(isButtonDisabled, infosPage, listLength);
       console.log('RESULTS', results);
       console.log('RESULTS LENGTH', results.length);
-      connection.then(() => nightmare.end());
-      
-      return results;
+
+      return [results, nightmare.end()];
     }
   }
   catch(e) {
     console.log('Une erreur s\'est produite, avez-vous bien saisi les deux paramètres : job puis place?')
+    nightmare.end();
     throw new Error(e);
   }
 }
