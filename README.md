@@ -14,5 +14,8 @@ two parameters are mandatory :
 an example with two known params : fleuritste honfleur
   - run this command in your terminal from the project folder: `node call-function-example.js`
 
+#### Response returned
+An array of all results of your research wich contains the name, the phone, the address and the website
+
 ### TEST the program
 Work in progress
