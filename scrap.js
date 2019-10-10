@@ -125,7 +125,7 @@ getResultsFromGoogleMaps = async (job, place) => {
     console.log('Veuillez patientez...')
     if (job && place) {
 
-      await goToWebsite(job, place);
+      await module.exports.goToWebsite(job, place);
 
       // goto search first page and return length of results
       const listLength = await getListLenghtForOnePage(job, place);
@@ -151,5 +151,6 @@ getResultsFromGoogleMaps = async (job, place) => {
 getResultsFromGoogleMaps(job, place);
 
 module.exports = {
-  getResultsFromGoogleMaps
+  getResultsFromGoogleMaps,
+  goToWebsite
 }
